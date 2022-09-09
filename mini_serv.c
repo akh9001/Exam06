@@ -33,10 +33,14 @@ void ft_exit(char *err, int len)
 
 void	broadcast(char *message, int len, int fd_client, struct s_client clients[], int max)
 {
-	for (int i = 3; i < max; i++)
+	for (int i = 0; i < max; i++)
 	{
-		if (clients[i].fd == fd_client || clients[i].fd == 0 || !FD_ISSET(i, &wr))
+		if (clients[i].fd == fd_client || clients[i].fd == 0 || !FD_ISSET(clients[i].fd, &wr))
 			continue;
+		// {
+		// 	printf("Halimax %d |%s| %d\n",max, message, clients[i].fd);
+		// 	printf(" %d %d %d\n", clients[i].fd, fd_client, FD_ISSET(i, &wr));
+		// }
 		send(clients[i].fd, message, len, 0);
 	}
 }
@@ -136,22 +140,27 @@ int main(int ac, char *av[])
 						if (fd < 0)
 							continue;
 							//* Here i create a new client
+						// //!
+						printf("New client connected\n");
 						FD_SET(fd, &master);
-						clients[i - (socket_id + 1)].fd = fd;
-						clients[i - (socket_id + 1)].buf = NULL;
+						clients[fd - (socket_id + 1)].fd = fd;
+						clients[fd - (socket_id + 1)].buf = NULL;
 						max = fd > max ? fd : max;
 						 // * Here i notify connected clients that he is connected!
-						len = sprintf(msg,"server: client %d just left\n", i - (socket_id + 1));
-						broadcast(msg, len, i, clients, max);
+						len = sprintf(msg,"server: client %d just arrived\n",fd - (socket_id + 1));
+						// //!
+						// printf("fd client[%d] = %d, %d\n",fd - (socket_id + 1), fd, clients[fd - (socket_id + 1)].fd);
+						broadcast(msg, len, fd, clients, max - socket_id);
 					}
 					else
 					{
 						while ((len = recv(i, msg, buf_size, 0)) > 0)
 						{
-							clients[i - (socket_id + 1)].buf = str_join(clients[i - (socket_id + 1)].buf, msg);
+							clients[i - (socket_id + 1)].buf = str_join(clients[i - (socket_id +1)].buf, msg);
 							if (len < buf_size)
 								break;
-							
+							printf("message = %s, %s\n", msg, clients[i - (socket_id + 1)].buf);
+							bzero(msg, buf_size);
 						}
 						if (len <= 0)
 						{
@@ -167,10 +176,13 @@ int main(int ac, char *av[])
 				}
 				else if (FD_ISSET(i, &wr))
 				{
+						// printf("Halima\n");
+						// printf("Halima2\n");
 					// extract_message(char **buf, char **msg)
 					while (extract_message(&clients[i - (socket_id + 1)].buf, &line) > 0)
 					{
 						len = sprintf(msg, "client %d: %s", i - (socket_id + 1), line);
+						printf("client %d: %s", i - (socket_id + 1), line);
 						broadcast(msg, len, i, clients, max);
 						free(line);
 					}
