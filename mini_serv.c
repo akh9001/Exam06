@@ -7,10 +7,6 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <stdio.h>
-#include <fcntl.h>
-
-// * Allowed functions: write, close, select, socket, accept, listen, send, recv,
-// * bind, strstr, malloc, realloc, free, calloc, bzero, atoi, sprintf, strlen, exit, strcpy, strcat, memset
 
 struct s_client
 {
@@ -135,7 +131,6 @@ int main(int ac, char *av[])
 					if (i == socket_id)
 					{
 						fd = accept(socket_id, (struct sockaddr *)&clt_addr, &len_add);
-						// fcntl(fd, F_SETFL, O_NONBLOCK);
 						if (fd < 0)
 							continue;
 							//* Here i create a new client
@@ -151,59 +146,13 @@ int main(int ac, char *av[])
 					}
 					else
 					{
-						// while ((len = recv(i, msg, buf_size, 0)) > 0)
-						// {
-						// 	printf("line = %d\n", len);
-						// 	clients[i - (socket_id + 1)].buf = str_join(clients[i - (socket_id + 1)].buf, msg);
-						// 	bzero(msg, buf_size);
-						// }
-						// printf("line = %d\n", len);
-						// printf("buffer %d: %s\n", clients[i - (socket_id + 1)].id, clients[i - (socket_id + 1)].buf);
-						// if (len == 0)
-						// {
-						// 	close(i);
-						// 	FD_CLR(i, &master);
-						// 	clients[i - (socket_id + 1)].fd = 0;
-						// 	free(clients[i - (socket_id + 1)].buf);
-						// 	clients[i - (socket_id + 1)].buf = NULL;
-						// 	len = sprintf(msg, "server: client %d just left\n", clients[i - (socket_id + 1)].id);
-						// 	broadcast(msg,len, i, clients, max);
-						// }
-
-
-
-						// len = buf_size - 1;
-						// while (len == buf_size -1 )
-						// {
-						// 	len = recv(i, msg, buf_size - 1, 0);
-						// 	printf("line = %d\n", len);
-						// 	if (len <= 0)
-						// 		break;
-						// 	clients[i - (socket_id + 1)].buf = str_join(clients[i - (socket_id + 1)].buf, msg);
-						// 	bzero(msg, buf_size);
-						// }
-						// // printf("buffer %d: %s\n", clients[i - (socket_id + 1)].id, clients[i - (socket_id + 1)].buf);
-						// if (len == 0)
-						// {
-						// 	close(i);
-						// 	FD_CLR(i, &master);
-						// 	clients[i - (socket_id + 1)].fd = 0;
-						// 	free(clients[i - (socket_id + 1)].buf);
-						// 	clients[i - (socket_id + 1)].buf = NULL;
-						// 	len = sprintf(msg, "server: client %d just left\n", clients[i - (socket_id + 1)].id);
-						// 	broadcast(msg,len, i, clients, max);
-						// }
-
-
 						while ((len = recv(i, msg, buf_size, 0)) > 0)
 						{
 							clients[i - (socket_id + 1)].buf = str_join(clients[i - (socket_id +1)].buf, msg);
 							if (len < buf_size)
 								break;
-							// printf("message = %s, %s\n", msg, clients[i - (socket_id + 1)].buf);
 							bzero(msg, buf_size);
 						}
-						// printf("end line = %d\n", len);
 						if (len == 0)
 						{
 							close(i);
@@ -219,17 +168,12 @@ int main(int ac, char *av[])
 							while (extract_message(&clients[i - (socket_id + 1)].buf, &line) > 0)
 							{
 								len = sprintf(msg, "client %d: %s", clients[i - (socket_id + 1)].id, line);
-								// printf("client %d: %s", i - (socket_id + 1), line);
 								broadcast(msg, len, i, clients, max);
 								free(line);
 							}
 						}
 					}
 				}
-				// else if (FD_ISSET(i, &wr))
-				// {
-				// }
-
 			}
 		}
 	}
