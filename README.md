@@ -19,6 +19,6 @@ $ nc 127.0.0.1 1221 < file_name
 - The second command, the client will connect and send the content of file_name then disconnect !
 - Try to connect and disconnect several times & check if entering/leaving message the client is well displayed(right client id)!
 
-Good Luck,
-made with :heart:,
+Good Luck,<br>
+made with :heart:,<br>
 Asmaa KHALIDY.
