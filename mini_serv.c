@@ -12,7 +12,6 @@
 struct client
 {
 	int id;
-	int fd;
 	char *buf;
 };
 
@@ -127,7 +126,6 @@ int	main(int ac, char **av)
 					index = clt_fd - (socket_fd + 1);
 					FD_SET(clt_fd, &master);
 					clients[index].id = id++;
-					clients[index].fd = clt_fd;
 					clients[index].buf = NULL;
 					max = clt_fd > max ? clt_fd : max;
 					sprintf(message, "server: client %d just arrived\n", clients[index].id);
@@ -148,7 +146,6 @@ int	main(int ac, char **av)
 						close(i);
 						free(clients[index].buf);
 						clients[index].buf = NULL;
-						clients[index].fd = 0;
 						FD_CLR(i, &master);
 						FD_CLR(i, &rd);
 						FD_CLR(i, &wr);
